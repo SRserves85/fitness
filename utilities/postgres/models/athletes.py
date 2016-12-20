@@ -10,12 +10,11 @@ from utilities.postgres import Base
 class Athlete(Base):
     __tablename__ = 'athletes'
 
-    __table_args__ = {'extend_existing': True}
-
     name = Column(String(), nullable=False, primary_key=True)
     created_at = Column(DateTime(), nullable=False)
     weight = Column(Float())
     height = Column(Integer(), primary_key=True)
+    shoulder_height = Column(Integer())
     arm_length = Column(Integer())
     leg_length = Column(Integer())
     upper_leg_length = Column(Integer())
@@ -27,3 +26,4 @@ class Athlete(Base):
     clean = Column(Integer())
     jerk = Column(Integer())
     bench = Column(Integer())
+    mile_run_seconds = Column(Integer())

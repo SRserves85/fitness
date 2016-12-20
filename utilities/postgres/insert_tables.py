@@ -4,7 +4,8 @@ from sqlalchemy import create_engine
 from env import LOCAL_PG_CRIDENTIALS
 
 from utilities.postgres import Base
-from utilities.postgres.athletes import Athlete
+from utilities.postgres.models.athletes import Athlete
+from utilities.postgres.models.workout import Workout
 
 def insert_tables():
 
