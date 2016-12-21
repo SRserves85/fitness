@@ -18,7 +18,7 @@ class Workout(Base):
     date = Column(DateTime(), nullable=False, primary_key=True)
     workout_length_seconds = Column(Integer(), nullable=False, primary_key=True)
     created_at = Column(DateTime())
-    wattage = Column(Float(), nullable=False)
+    joules = Column(Float(), nullable=False)
     pull_up = Column(Integer())
     push_up = Column(Integer())
     burpie = Column(Integer())

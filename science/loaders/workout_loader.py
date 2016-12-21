@@ -7,41 +7,17 @@ import datetime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
-from science.loaders.helpers.workout_cal_converters.movement_conversion_model import (pull_up_calc,
-                                                                                      push_up_calc,
-                                                                                      burpie_calc,
-                                                                                      double_under_calc,
-                                                                                      run_dist_meters_calc,
-                                                                                      dead_lift_calc,
-                                                                                      box_jump_calc,
-                                                                                      air_squat_calc,
-                                                                                      handstand_push_up_calc,
-                                                                                      wall_ball_calc,
-                                                                                      kettle_bell_calc,
-                                                                                      russian_kettle_bell_calc,
-                                                                                      thruster_calc,
-                                                                                      row_distance_calc,
-                                                                                      row_calories_calc,
-                                                                                      back_squat_calc,
-                                                                                      muscle_up_calc,
-                                                                                      push_press_calc,
-                                                                                      overhead_squat_calc,
-                                                                                      back_extension_calc,
-                                                                                      GHD_sit_up_calc,
-                                                                                      press_calc,
-                                                                                      sit_up_calc,
-                                                                                      front_squat_calc,
-                                                                                      rope_climb_calc,
-                                                                                      ring_dip_calc,
-                                                                                      walking_lunge_calc,
-                                                                                      knees_to_elbows_calc,
-                                                                                      bench_press_calc,
-                                                                                      push_jerk_calc,
-                                                                                      clean_calc,
-                                                                                      power_clean_calc,
-                                                                                      jerk_calc,
-                                                                                      sumo_dead_lift_calc,
-                                                                                      cycling_avg_watts_calc)
+from science.loaders.helpers.workout_cal_converters.movement_conversion_model import (
+    pull_up_calc, push_up_calc, burpie_calc, double_under_calc,
+    run_dist_meters_calc, dead_lift_calc, box_jump_calc, air_squat_calc,
+    handstand_push_up_calc, wall_ball_calc, kettle_bell_calc,
+    russian_kettle_bell_calc, thruster_calc, row_distance_calc, row_calories_calc,
+    back_squat_calc, muscle_up_calc, push_press_calc, overhead_squat_calc,
+    back_extension_calc, GHD_sit_up_calc, press_calc, sit_up_calc,
+    front_squat_calc, rope_climb_calc, ring_dip_calc, walking_lunge_calc,
+    knees_to_elbows_calc, bench_press_calc, push_jerk_calc, clean_calc,
+    power_clean_calc, jerk_calc, sumo_dead_lift_calc, cycling_avg_watts_calc)
+
 from utilities.postgres.models.workout import Workout
 from utilities.postgres.connection import engine, db_query
 
@@ -51,7 +27,6 @@ def _load_workouts():
     # TODO: google-doc implimentation
     print("importing data...")
     df = pd.read_csv('data/workouts.csv').fillna(0.0)
-
 
     print("loading {} athletes...".format(len(df.name.unique())))
     Session = sessionmaker()
@@ -155,7 +130,7 @@ def _load_workouts():
             except ValueError:
                 raise
             # Calculate Calories expended in the workout:
-            calories = np.array([
+            joules_total = np.sum(np.array([
                 pull_up_calc(weight, arm_length, pull_up_number),
                 push_up_calc(weight, arm_length, push_up_number),
                 burpie_calc(weight, height, burpie_number),
@@ -191,8 +166,78 @@ def _load_workouts():
                 jerk_calc(weight, jerk_weight, arm_length, upper_leg_length, jerk_number),
                 sumo_dead_lift_calc(weight, shoulder_height, height, arm_length, sumo_dead_lift_weight, sumo_dead_lift_number),
                 cycling_avg_watts_calc(cycling_avg_watts)
-            ])
+            ]))
+            try:
+                insert = Workout(
+                    name=athlete,
+                    workout_type=workout_type,
+                    date=date,
+                    workout_length_seconds=workout_length_seconds,
+                    created_at=created_at,
+                    joules=joules_total,
+                    pull_up=pull_up_number,
+                    push_up=push_up_number,
+                    burpie=burpie_number,
+                    double_under=double_under_number,
+                    run_dist_meters=run_dist_meters,
+                    deadlift=deadlift_number,
+                    deadlift_weight=deadlift_weight,
+                    box_jump=box_jump_number,
+                    box_jump_height=box_jump_height,
+                    air_squat=air_squat_number,
+                    handstand_push_up=handstand_push_up_number,
+                    wall_ball=wall_ball_number,
+                    wall_ball_weight=wall_ball_weight,
+                    kettle_bell_swing=kettle_bell_swing_number,
+                    kettle_bell_swing_weight=kettle_bell_swing_weight,
+                    russian_kettle_bell_swing=russian_kettle_bell_swing_number,
+                    russian_kettle_bell_swing_weight=russian_kettle_bell_swing_weight,
+                    thruster=thruster_number,
+                    thruster_weight=thruster_weight,
+                    row_dist_meters=row_dist_meters,
+                    row_calories=row_calories,
+                    back_squat=back_squat_number,
+                    back_squat_weight=back_squat_weight,
+                    muscle_up=muscle_up_number,
+                    push_press=push_press_number,
+                    push_press_weight=push_press_weight,
+                    overhead_squat=overhead_squat_number,
+                    overhead_squat_weight=overhead_squat_weight,
+                    back_extension=back_extension_number,
+                    GHD_sit_up=GHD_sit_up_number,
+                    press=press_number,
+                    press_weight=press_weight,
+                    abmat_sit_up=abmat_sit_up_number,
+                    front_squat=front_squat_number,
+                    front_squat_weight=front_squat_weight,
+                    rope_climb=rope_climb_number,
+                    ring_dip=ring_dip_number,
+                    walking_lunge=walking_lunge_number,
+                    knees_to_elbows=knees_to_elbows_number,
+                    bench_press=bench_press_number,
+                    bench_press_weight=bench_press_weight,
+                    push_jerk=push_jerk_number,
+                    push_jerk_weight=push_jerk_weight,
+                    clean=clean_number,
+                    clean_weight=clean_weight,
+                    power_clean=power_clean_number,
+                    power_clean_weight=power_clean_weight,
+                    jerk=jerk_number,
+                    jerk_weight=jerk_weight,
+                    sumo_dead_lift=sumo_dead_lift_number,
+                    sumo_dead_lift_weight=sumo_dead_lift_weight,
+                    cycling_avg_watts=cycling_avg_watts
+                        )
+            except(ValueError, TypeError):
+                raise("please fill out the form correctly!")
             import pdb; pdb.set_trace()
+            try:
+                session.add(insert)
+                session.flush()
+            except IntegrityError:
+                session.rollback()
+        session.commit()
+
 
 if __name__ == '__main__':
     _load_workouts()
