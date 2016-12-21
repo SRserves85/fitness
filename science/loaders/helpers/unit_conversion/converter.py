@@ -3,7 +3,7 @@
 
 
 def lb_to_kg(lb_number):
-    """Takes lbs and returns value in kg 
+    """Takes lbs and returns value in kg
 
     aargs:
         d(float) lb_number
@@ -11,11 +11,11 @@ def lb_to_kg(lb_number):
     returns:
         d(float) kg_number
     """
-    if isinstance(lb_number, float):
+    try:
         return 0.453592 * lb_number
-    else:
+    except (ValueError, TypeError):
         print "Something is really really wrong!!!"
-        raise(ValueError)
+        raise
 
 
 def in_to_meter(in_number):
@@ -27,8 +27,8 @@ def in_to_meter(in_number):
     returns:
         d(float) meters_number
     """
-    if isinstance(in_number, float):
+    try:
         return 0.0254 * in_number
-    else:
+    except (ValueError, TypeError):
         print "Something is really really wrong!!!"
         raise(ValueError)

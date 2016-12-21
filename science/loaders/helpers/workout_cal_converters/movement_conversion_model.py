@@ -206,7 +206,7 @@ def kettle_bell_calc(kettle_bell_weight, arm_length, number):
     return lb_to_kg(kettle_bell_weight) * 9.80665 * in_to_meter(arm_length * 2) * number
 
 
-def russion_kettle_bell_calc(kettle_bell_weight, arm_length, number):
+def russian_kettle_bell_calc(kettle_bell_weight, arm_length, number):
     """Takes kettle_bell_weight, armlength, number and returns joules.
 
     aargs:
@@ -305,8 +305,10 @@ def muscle_up_calc(weight, arm_length, number):
     return lb_to_kg(weight) * 9.80665 * in_to_meter(arm_length * 2) * number
 
 
-def push_press_calc(push_press_weight, arm_length, number):
+def push_press_calc(weight, push_press_weight, arm_length, upper_leg_length, number):
     """Takes push_press_weight, arm_length, number and returns joules.
+
+    assumes a 0.5 upper_leg_length dip for drive
 
     aargs:
         d(float) weight
@@ -316,7 +318,12 @@ def push_press_calc(push_press_weight, arm_length, number):
     returns:
         d(float) joules
     """
-    return lb_to_kg(push_press_weight) * 9.80665 * in_to_meter(arm_length) * number
+    dip_length = upper_leg_length / 2
+
+    dip_drive = lb_to_kg(push_press_weight) * 9.80665 * in_to_meter(dip_length) * number
+    dip_drive_weight = lb_to_kg(weight) * 9.80665 * in_to_meter(dip_length) * number
+    press_weight = lb_to_kg(push_press_weight) * 9.80665 * in_to_meter(arm_length) * number
+    return dip_drive + dip_drive_weight + press_weight
 
 
 def overhead_squat_calc(weight, upper_leg_length, overhead_squat_weight, number):
@@ -457,3 +464,199 @@ def ring_dip_calc(weight, arm_length, number):
     return lb_to_kg(weight) * 9.80665 * in_to_meter(arm_length) * number
 
 
+def walking_lunge_calc(weight, upper_leg_length, number):
+    """Takes weight, upper_leg_length, number and returns joules.
+
+    calculated similar to squats
+
+    multiplied by 2: 1 rep = 2 lunges
+
+    aargs:
+        d(float) weight
+        d(int) upper_leg_length
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    return lb_to_kg(weight) * 0.75 * 9.80665 * in_to_meter(upper_leg_length) * number * 2
+
+
+def knees_to_elbows_calc(weight, shoulder_height, leg_length, number):
+    """Takes weight, shoulder_height, leg_length, number and returns joules
+
+    same calculation as sit_ups (no real good way to do this)
+
+    aargs:
+        d(float) weight
+        d(int) shoulder_height
+        d(int) leg_length
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    ext_weight = lb_to_kg(weight * 0.75)
+    length = shoulder_height - leg_length
+    return lb_to_kg(ext_weight) * 9.80665 * in_to_meter(length) * number
+
+
+def bench_press_calc(bench_press_weight, arm_length, number):
+    """Takes bench_press_weight, arm_length, number and returns joules.
+
+    For Pushups, 60% of body mass is used ()
+
+    aargs:
+        d(float) bench_press_weight
+        d(int) arm_length
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    return lb_to_kg(bench_press_weight) * 9.80665 * in_to_meter(arm_length) * number
+
+
+def push_jerk_calc(weight, push_press_weight, arm_length, upper_leg_length, number):
+    """weight, push_press_weight, arm_length, upper_leg_length, number and returns joules.
+
+    assumes a 0.5 upper_leg_length dip for drive
+    finishes lift as 1/4 squat calc
+
+    aargs:
+        d(float) weight
+        d(int) upper_leg_length
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    dip_length = upper_leg_length / 4
+
+    dip_drive = lb_to_kg(push_press_weight) * 9.80665 * in_to_meter(dip_length) * number
+    dip_drive_weight = lb_to_kg(weight) * 9.80665 * in_to_meter(dip_length) * number
+    press_weight = lb_to_kg(push_press_weight) * 9.80665 * in_to_meter(arm_length) * number
+    return dip_drive + dip_drive_weight + press_weight
+
+
+def clean_calc(weight, shoulder_height, height, arm_length, clean_weight, upper_leg_length, number):
+    """Takes weight, shoulder_height, height, arm_length, clean_weight, number and returns joules
+
+    starts as dead_lift_calc
+    adds front squat calcs to work performed
+
+    For dead_lift, 0.225 meters is the starting location height of the bar
+    ending location = shoulder_height - arm_length
+
+    Body Center of mass is 0.66 for a standing person
+
+    aargs:
+        d(float) weight
+        d(int) shoulder_height
+        d(int) height
+        d(int) arm_length
+        d(int) clean_weight
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+
+    dis = (in_to_meter(shoulder_height) - in_to_meter(arm_length)) - 0.225
+
+    body_lift = lb_to_kg(weight) * 9.80665 * (in_to_meter(height) - 0.225) * 0.66 * number
+    bar_lift = lb_to_kg(clean_weight) * 9.80665 * dis * number
+    air_squat = lb_to_kg(weight) * 0.85 * 9.80665 * in_to_meter(upper_leg_length) * number
+    weight_squat = lb_to_kg(clean_weight) * 9.80665 * in_to_meter(upper_leg_length) * number
+    return body_lift + bar_lift + air_squat + weight_squat
+
+
+def power_clean_calc(weight, shoulder_height, height, arm_length, power_clean_weight, upper_leg_length, number):
+    """Takes weight, shoulder_height, height, arm_length, power_clean_weight, number and returns joules
+
+    starts as dead_lift_calc
+    adds front squat calcs to work performed
+
+    For dead_lift, 0.225 meters is the starting location height of the bar
+    ending location = shoulder_height - arm_length
+
+    uses a 0.8 multiplied factor for the finish
+
+    Body Center of mass is 0.66 for a standing person
+
+    aargs:
+        d(float) weight
+        d(int) shoulder_height
+        d(int) height
+        d(int) arm_length
+        d(int) power_clean_weight
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+
+    dis = (in_to_meter(shoulder_height) - in_to_meter(arm_length)) - 0.225
+
+    body_lift = lb_to_kg(weight) * 9.80665 * (in_to_meter(height) - 0.225) * 0.66 * number
+    bar_lift = lb_to_kg(power_clean_weight) * 9.80665 * dis * number
+    air_squat = lb_to_kg(weight) * 0.85 * 9.80665 * in_to_meter(upper_leg_length) * number * 0.8
+    weight_squat = lb_to_kg(power_clean_weight) * 9.80665 * in_to_meter(upper_leg_length) * number * 0.8
+    return body_lift + bar_lift + air_squat + weight_squat
+
+
+def jerk_calc(weight, jerk_weight, arm_length, upper_leg_length, number):
+    """Takes weight jerk_weight, arm_length, number and returns joules.
+
+    assumes a 0.4 upper_leg_length dip for drive
+
+    aargs:
+        d(float) weight
+        d(int) jerk_weight
+        d(int) arm_length
+        d(int) upper_leg_length
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    dip_length = upper_leg_length / 4
+
+    dip_drive = lb_to_kg(jerk_weight) * 9.80665 * in_to_meter(dip_length) * number
+    dip_drive_weight = lb_to_kg(weight) * 9.80665 * in_to_meter(dip_length) * number
+    press_weight = lb_to_kg(jerk_weight) * 9.80665 * in_to_meter(arm_length) * number
+    return dip_drive + dip_drive_weight + press_weight
+
+
+def sumo_dead_lift_calc(weight, shoulder_height, height, arm_length, sumo_dead_lift_weight, number):
+    """Takes weight, shoulder_height, arm_length, and number and returns joules
+
+    For sumo_dead_lift, 0.225 meters is the starting location height of the bar
+    ending location = shoulder_height - arm_length
+
+    Body Center of mass is 0.66 for a standing person
+
+    aargs:
+        d(float) weight
+        d(int) shoulder_height
+        d(int) height
+        d(int) arm_length
+        d(int) sumo_dead_lift_weight
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+
+    dis = (in_to_meter(shoulder_height) - in_to_meter(arm_length)) - 0.225
+
+    body_lift = lb_to_kg(weight) * 9.80665 * (in_to_meter(height) - 0.225) * 0.66 * number
+    bar_lift = lb_to_kg(sumo_dead_lift_weight) * 9.80665 * dis * number
+    return body_lift + bar_lift
+
+
+def cycling_avg_watts_calc(cycling_avg_watts):
+    """
+    This is a special case just for cyclists.
+    """
+    return cycling_avg_watts

@@ -3,7 +3,6 @@
 import pandas as pd
 import datetime
 
-from fish import ProgressFish
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
@@ -12,9 +11,11 @@ from utilities.postgres.connection import engine
 
 def _load_athletes():
     # read csv
-    # TODO: set google-doc implimentation
+    # TODO: google-doc implimentation
+    print("importing data...")
     df = pd.read_csv('data/athlete.csv')
 
+    print("loading {} athletes...").format(len(df.name.unique()))
     Session = sessionmaker()
     Session.configure(bind=engine)
     session = Session()
@@ -39,9 +40,12 @@ def _load_athletes():
                     clean=int(index['clean']),
                     jerk=int(index['jerk']),
                     bench=int(index['bench']),
-                    mile_run_seconds = int(index['mile_run_seconds']))
+                    mile_run_seconds=int(index['mile_run_seconds']),
+                    row_500_time=int(index['row_500_time'])
+                    )
         except(ValueError, TypeError):
             raise("please fill out the form correctly!")
+        import pdb; pdb.set_trace()
         try:
             session.add(insert)
             session.flush()

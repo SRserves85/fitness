@@ -27,3 +27,4 @@ class Athlete(Base):
     jerk = Column(Integer())
     bench = Column(Integer())
     mile_run_seconds = Column(Integer())
+    row_500_time = Column(Integer())
