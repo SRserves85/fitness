@@ -27,3 +27,4 @@ class Athlete(Base):
     clean = Column(Integer())
     jerk = Column(Integer())
     bench = Column(Integer())
+    row_500_time_sec = Column(Integer())

@@ -5,7 +5,6 @@ Needs athlete information to calculate anything
 For most movements, Basic Formaula will be:
 work (joules) = mass * gravity * height * number_reps
 """
-import numpy as np
 
 from science.loaders.helpers.unit_conversion.converter import (lb_to_kg,
                                                                in_to_meter)
@@ -120,7 +119,7 @@ def dead_lift_calc(weight, shoulder_height, height, arm_length, dead_lift_weight
     dis = (in_to_meter(shoulder_height) - in_to_meter(arm_length)) - 0.225
 
     body_lift = lb_to_kg(weight) * 9.80665 * (in_to_meter(height) - 0.225) * 0.66 * number
-    bar_lift = lb_to_kg(dead_lift_weight) * 9.80665 * dis
+    bar_lift = lb_to_kg(dead_lift_weight) * 9.80665 * dis * number
     return body_lift + bar_lift
 
 
@@ -143,7 +142,7 @@ def box_jump_calc(weight, box_jump_height, number):
 def air_squat_calc(weight, upper_leg_length, number):
     """Takes weight, upper_leg_lengthm number and returns joules.
 
-    movement length: upper_let_length
+    movement length: upper_leg_length
     mass = 0.66 of body mass
 
     aargs:
@@ -154,7 +153,7 @@ def air_squat_calc(weight, upper_leg_length, number):
     returns:
         d(float) joules
     """
-    return lb_to_kg(weight) * 0.66 * 9.80665 * in_to_meter(upper_leg_length) * number
+    return lb_to_kg(weight) * 0.85 * 9.80665 * in_to_meter(upper_leg_length) * number
 
 
 def handstand_push_up_calc(weight, height, arm_length, shoulder_height, number):
@@ -173,3 +172,288 @@ def handstand_push_up_calc(weight, height, arm_length, shoulder_height, number):
     """
     length = in_to_meter(arm_length) - (in_to_meter(height) - in_to_meter(shoulder_height))
     return lb_to_kg(weight) * 9.80665 * length * number
+
+
+def wall_ball_calc(weight, upper_leg_length, shoulder_height, wall_ball_weight, number):
+    """Takes weight, upper_leg_length, well_ball_weight, number and returns joules
+
+    aargs:
+        d(float) weight
+        d(int) upper_leg_length
+        d(int) shoulder_height
+        d(int) wall_ball_weight
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    squat = lb_to_kg(weight + wall_ball_weight) * 0.88 * 9.80665 * in_to_meter(upper_leg_length) * number
+    wall_ball = lb_to_kg(wall_ball_weight) * 9.80665 * in_to_meter(120 - shoulder_height) * number
+    return squat + wall_ball
+
+
+def kettle_bell_calc(kettle_bell_weight, arm_length, number):
+    """Takes kettle_bell_weight, armlength, number and returns joules.
+
+    aargs:
+        d(float) weight
+        d(int) upper_leg_length
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    return lb_to_kg(kettle_bell_weight) * 9.80665 * in_to_meter(arm_length * 2) * number
+
+
+def russion_kettle_bell_calc(kettle_bell_weight, arm_length, number):
+    """Takes kettle_bell_weight, armlength, number and returns joules.
+
+    aargs:
+        d(float) weight
+        d(int) upper_leg_length
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    return lb_to_kg(kettle_bell_weight) * 9.80665 * in_to_meter(arm_length) * number
+
+
+def thruster_calc(weight, upper_leg_length, shoulder_height, arm_length, thruster_weight, number):
+    """Takes kettle_bell_weight, armlength, number and returns joules.
+
+    aargs:
+        d(float) weight
+        d(int) upper_leg_length
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    air_squat = lb_to_kg(weight) * 0.85 * 9.80665 * in_to_meter(upper_leg_length) * number
+    weight_squat = lb_to_kg(thruster_weight) * 9.80665 * in_to_meter(upper_leg_length) * number
+    press = lb_to_kg(thruster_weight) * 9.80665 * in_to_meter(arm_length) * number
+    return air_squat + weight_squat + press
+
+
+def row_distance_calc(row_500_time_sec, distance):
+    """takes weight, row_time, distance returns joules
+
+    Assumes you are rowing at 80% your 500 meter pace.
+    Couldn't think of a better way to do this to take into account better rowers.
+
+    see below for concept 2 calculation:
+    http://www.concept2.com/indoor-rowers/training/calculators/calorie-calculator
+
+    aargs:
+        d(int) row_500_time_sec
+        d(int) distance
+
+    returns:
+        d(float) joules
+    """
+    adjusted_500_time = row_500_time_sec * 1.2
+    pace = 500 / adjusted_500_time
+    wattage = (2.8 / pace)**3  # Joules/second
+    return wattage * row_500_time_sec  # joules
+
+
+def row_calories_calc(row_calories):
+    """takes row_calories returns joules
+
+    Need conversion to actual work done, not metabolic calorie as reported by
+    concept2
+
+    aargs:
+        d(int): row_calories
+
+    returns:
+        d(float): joules
+    """
+    return row_calories * 4184
+
+
+def back_squat_calc(weight, upper_leg_length, back_squat_weight, number):
+    """Takes weight, upper_leg_length, back_squat_weight, number and return joules
+
+    aargs:
+        d(float) weight
+        d(int) upper_leg_length
+        d(int) back_squat_weight
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    body = lb_to_kg(weight) * 0.85 * 9.80665 * in_to_meter(upper_leg_length) * number
+    weight = lb_to_kg(back_squat_weight) * 9.80665 * in_to_meter(upper_leg_length) * number
+    return body + weight
+
+
+def muscle_up_calc(weight, arm_length, number):
+    """Takes weight, armlength, number and returns joules.
+
+    aargs:
+        d(float) weight
+        d(int) upper_leg_length
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    return lb_to_kg(weight) * 9.80665 * in_to_meter(arm_length * 2) * number
+
+
+def push_press_calc(push_press_weight, arm_length, number):
+    """Takes push_press_weight, arm_length, number and returns joules.
+
+    aargs:
+        d(float) weight
+        d(int) upper_leg_length
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    return lb_to_kg(push_press_weight) * 9.80665 * in_to_meter(arm_length) * number
+
+
+def overhead_squat_calc(weight, upper_leg_length, overhead_squat_weight, number):
+    """Takes weight, upper_leg_length, back_squat_weight, number and return joules
+
+    aargs:
+        d(float) weight
+        d(int) upper_leg_length
+        d(int) back_squat_weight
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    body = lb_to_kg(weight) * 0.85 * 9.80665 * in_to_meter(upper_leg_length) * number
+    weight = lb_to_kg(overhead_squat_weight) * 9.80665 * in_to_meter(upper_leg_length) * number
+    return body + weight
+
+
+def back_extension_calc(weight, shoulder_height, leg_length, number):
+    """Takes weight, shoulder_height, leg_length and returns joules
+
+    assumes body weight is 0.75 of total weight
+    assumes height of lift is torso length
+
+    aargs:
+        d(float) weight
+        d(int) shoulder_height
+        d(int) leg_length
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    ext_weight = lb_to_kg(weight * 0.75)
+    length = shoulder_height - leg_length
+    return lb_to_kg(ext_weight) * 9.80665 * in_to_meter(length) * number
+
+
+def GHD_sit_up_calc(weight, shoulder_height, leg_length, number):
+    """Takes weight, shoulder_height, leg_length and returns joules
+
+    assumes body weight is 0.75 of total weight
+    assumes height of lift is torso length
+    uses a 1.5 multiplyer for output joules to correct for extra motion
+
+    aargs:
+        d(float) weight
+        d(int) shoulder_height
+        d(int) leg_length
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    ext_weight = lb_to_kg(weight * 0.75)
+    length = shoulder_height - leg_length
+    return lb_to_kg(ext_weight) * 9.80665 * in_to_meter(length) * number * 1.5
+
+
+def press_calc(press_weight, arm_length, number):
+    """Takes press_weight, arm_length, number and returns joules.
+
+    aargs:
+        d(float) press_weight
+        d(int) upper_leg_length
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    return lb_to_kg(press_weight) * 9.80665 * in_to_meter(arm_length) * number
+
+
+def sit_up_calc(weight, shoulder_height, leg_length, number):
+    """Takes weight, shoulder_height, leg_length and returns joules
+
+    assumes body weight is 0.75 of total weight
+    assumes height of lift is torso length
+
+    aargs:
+        d(float) weight
+        d(int) shoulder_height
+        d(int) leg_length
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    ext_weight = lb_to_kg(weight * 0.75)
+    length = shoulder_height - leg_length
+    return lb_to_kg(ext_weight) * 9.80665 * in_to_meter(length) * number
+
+
+def front_squat_calc(weight, upper_leg_length, front_squat_weight, number):
+    """Takes weight, upper_leg_length, back_squat_weight, number and return joules
+
+    aargs:
+        d(float) weight
+        d(int) upper_leg_length
+        d(int) back_squat_weight
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    body = lb_to_kg(weight) * 0.85 * 9.80665 * in_to_meter(upper_leg_length) * number
+    weight = lb_to_kg(front_squat_weight) * 9.80665 * in_to_meter(upper_leg_length) * number
+    return body + weight
+
+
+def rope_climb_calc(weight, number):
+    """Takes weight, number and returns joules.
+
+    hardcoded for 12 foot rope
+
+    aargs:
+        d(float) weight
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    return lb_to_kg(weight) * 9.80665 * in_to_meter(144) * number
+
+
+def ring_dip_calc(weight, arm_length, number):
+    """Takes weight, arm_length, number and returns joules.
+
+    aargs:
+        d(float) weight
+        d(int) arm_length
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+    return lb_to_kg(weight) * 9.80665 * in_to_meter(arm_length) * number
+
+
