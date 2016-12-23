@@ -71,7 +71,7 @@ def _load_workouts():
 
         for row, index in df[df['name'] == athlete].iterrows():
             try:
-                name = str(athlete)
+                name = str(athlete).upper()
                 workout_type = str(index['workout_type'])
                 date = index['date']
                 workout_length_seconds = int(index['workout_length_seconds'])
@@ -170,7 +170,7 @@ def _load_workouts():
             ]))
             try:
                 insert = Workout(
-                    name=athlete,
+                    name=str(athlete).upper(),
                     workout_type=workout_type,
                     date=date,
                     workout_length_seconds=workout_length_seconds,

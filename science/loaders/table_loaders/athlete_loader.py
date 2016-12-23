@@ -25,7 +25,7 @@ def _load_athletes():
     for row, index in df.iterrows():
         try:
             insert = Athlete(
-                    name=str(index['name']),
+                    name=str(index['name']).upper(),
                     created_at=datetime.datetime.now(),
                     weight=float(index['weight']),
                     height=int(index['height']),

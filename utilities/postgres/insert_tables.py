@@ -1,8 +1,8 @@
 """creates tables for athletes
 """
 from sqlalchemy import create_engine
-from env import LOCAL_PG_CRIDENTIALS
 
+from env import LOCAL_PG_CRIDENTIALS
 from utilities.postgres import Base
 from utilities.postgres.models.athletes import Athlete
 from utilities.postgres.models.workout import Workout
