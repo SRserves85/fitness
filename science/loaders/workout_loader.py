@@ -7,6 +7,8 @@ import datetime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
+from utilities.google.sheets import _pull_google_workout_data
+
 from science.loaders.helpers.workout_cal_converters.movement_conversion_model import (
     pull_up_calc, push_up_calc, burpie_calc, double_under_calc,
     run_dist_meters_calc, dead_lift_calc, box_jump_calc, air_squat_calc,
@@ -24,7 +26,10 @@ from utilities.postgres.connection import engine, db_query
 
 def _load_workouts():
     # read csv
-    # TODO: google-doc implimentation
+    
+    # run google doc implimentation
+    _pull_google_workout_data()
+
     print("importing data...")
     df = pd.read_csv('data/workouts.csv').fillna(0.0)
     df.name = df.name.str.upper()
