@@ -25,8 +25,9 @@ from utilities.postgres.connection import engine, db_query
 
 
 def _load_workouts():
+    #TODO: Autoupdate athlete stats in case of PR's
+
     # read csv
-    
     # run google doc implimentation
     _pull_google_workout_data()
 
