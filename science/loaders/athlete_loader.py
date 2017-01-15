@@ -12,7 +12,7 @@ from utilities.postgres.connection import engine
 def _load_athletes():
     # read csv
     # TODO: google-doc implimentation
-    print("importing data...")
+    print("importing athletes...")
     df = pd.read_csv('data/athlete.csv')
     df.name = df.name.str.upper()
 

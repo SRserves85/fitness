@@ -9,7 +9,7 @@ brew install python, postgresql, R via brew
 Clone the repo
 mkvirtualenv fitness --no-site-packages
 cd to repo
-add2virtualenv
+add2virtualenv .
 pip install -r requirements.txt
 pip install scipy
 

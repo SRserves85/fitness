@@ -51,3 +51,6 @@ def _pull_google_workout_data():
             print('ERROR (could not download file)')
     else:
         print('!!! ERROR: File not found')
+
+if __name__ == '__main__':
+    _pull_google_workout_data()
