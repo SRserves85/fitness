@@ -9,10 +9,10 @@ from sqlalchemy.exc import IntegrityError
 from utilities.postgres.models.athletes import Athlete
 from utilities.postgres.connection import engine
 
+
 def _load_athletes():
-    # read csv
-    # TODO: google-doc implimentation
-    print("importing data...")
+
+    print("importing athletes...")
     df = pd.read_csv('data/athlete.csv')
     df.name = df.name.str.upper()
 
@@ -25,12 +25,12 @@ def _load_athletes():
     for row, index in df.iterrows():
         try:
             insert = Athlete(
-                    name=str(index['name']).upper(),
+                    name=str(index['name']),
                     created_at=datetime.datetime.now(),
                     weight=float(index['weight']),
                     height=int(index['height']),
-                    shoulder_height = int(index['shoulder_height']),
-                    arm_length =int(index['arm_length']),
+                    shoulder_height=int(index['shoulder_height']),
+                    arm_length=int(index['arm_length']),
                     leg_length=int(index['leg_length']),
                     upper_leg_length=int(index['upper_leg_length']),
                     lower_leg_length=int(index['lower_leg_length']),
