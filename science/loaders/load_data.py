@@ -15,3 +15,4 @@ if __name__ == '__main__':
     loading._pull_data()
     loading._load_athletes()
     loading._load_workouts()
+    loading._load_workout_joules()

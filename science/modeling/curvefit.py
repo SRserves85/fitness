@@ -6,8 +6,8 @@ def fit_athlte_results(workout_time, wattage):
     """Takes workout results and returns coefficients for a log curve
 
     aargs:
-        d(numpy array): workout times (seconds)
-        d(numpy_array): workout wattage (joules)
+        d(numpy.array): workout times (seconds)
+        d(numpy.array): workout wattage (joules)
 
     returns:
         d(list): coefficients of fitted workout curve

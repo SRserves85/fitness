@@ -22,16 +22,16 @@ from science.loaders.helpers.workout_cal_converters.movement_conversion_model im
     power_clean_calc, jerk_calc, sumo_dead_lift_calc, cycling_avg_watts_calc,
     snatch_calc, power_snatch_calc)
 
-from utilities.postgres.models.workout import Workout
+from utilities.postgres.models.workout_joules import Workout_Joules
 from utilities.postgres.connection import engine, db_query
 
 
-def _load_workouts():
+def _load_workout_joules():
     # TODO: Autoupdate athlete stats in case of PR's
     # ADD COEFFICIENT FINDERS
 
-    # read csv
-    print("importing workouts...")
+    # read downloaded csv
+    print("importing workouts joules...")
     df = pd.read_csv('data/workouts.csv').fillna(0.0)
     df.name = df.name.str.upper()
 
@@ -220,68 +220,51 @@ def _load_workouts():
                 power_snatch_joules
                             ]))
             try:
-                insert = Workout(
-                    name=athlete,
+                insert = Workout_Joules(
+                    name=name,
                     workout_type=workout_type,
                     date=date,
                     workout_length_seconds=workout_length_seconds,
                     created_at=created_at,
-                    joules=int(joules_total),
-                    pull_up=pull_up_number,
-                    push_up=push_up_number,
-                    burpie=burpie_number,
-                    double_under=double_under_number,
-                    run_dist_meters=run_dist_meters,
-                    deadlift=deadlift_number,
-                    deadlift_weight=deadlift_weight,
-                    box_jump=box_jump_number,
-                    box_jump_height=box_jump_height,
-                    air_squat=air_squat_number,
-                    handstand_push_up=handstand_push_up_number,
-                    wall_ball=wall_ball_number,
-                    wall_ball_weight=wall_ball_weight,
-                    kettle_bell_swing=kettle_bell_swing_number,
-                    kettle_bell_swing_weight=kettle_bell_swing_weight,
-                    russian_kettle_bell_swing=russian_kettle_bell_swing_number,
-                    russian_kettle_bell_swing_weight=russian_kettle_bell_swing_weight,
-                    thruster=thruster_number,
-                    thruster_weight=thruster_weight,
-                    row_dist_meters=row_dist_meters,
-                    row_calories=row_calories,
-                    back_squat=back_squat_number,
-                    back_squat_weight=back_squat_weight,
-                    muscle_up=muscle_up_number,
-                    push_press=push_press_number,
-                    push_press_weight=push_press_weight,
-                    overhead_squat=overhead_squat_number,
-                    overhead_squat_weight=overhead_squat_weight,
-                    back_extension=back_extension_number,
-                    GHD_sit_up=GHD_sit_up_number,
-                    press=press_number,
-                    press_weight=press_weight,
-                    abmat_sit_up=abmat_sit_up_number,
-                    front_squat=front_squat_number,
-                    front_squat_weight=front_squat_weight,
-                    rope_climb=rope_climb_number,
-                    ring_dip=ring_dip_number,
-                    walking_lunge=walking_lunge_number,
-                    knees_to_elbows=knees_to_elbows_number,
-                    bench_press=bench_press_number,
-                    bench_press_weight=bench_press_weight,
-                    push_jerk=push_jerk_number,
-                    push_jerk_weight=push_jerk_weight,
-                    clean=clean_number,
-                    clean_weight=clean_weight,
-                    power_clean=power_clean_number,
-                    power_clean_weight=power_clean_weight,
-                    jerk=jerk_number,
-                    jerk_weight=jerk_weight,
-                    sumo_dead_lift=sumo_dead_lift_number,
-                    sumo_dead_lift_weight=sumo_dead_lift_weight,
-                    cycling_avg_watts=cycling_avg_watts,
-                    snatch=snatch_number,
-                    power_snatch=power_snatch_number
-                        )
+                    joules_total=int(joules_total),
+                    pull_up_joules=int(pull_up_joules),
+                    push_up_joules=int(push_up_joules),
+                    burpie_joules=int(burpie_joules),
+                    double_under_joules=int(double_under_joules),
+                    run_dist_meters_joules=int(run_dist_meters_joules),
+                    deadlift_joules=int(deadlift_joules),
+                    box_jump_joules=int(box_jump_joules),
+                    air_squat_joules=int(air_squat_joules),
+                    handstand_push_up_joules=int(handstand_push_up_joules),
+                    wall_ball_joules=int(wall_ball_joules),
+                    kettle_bell_swing_joules=int(kettle_bell_swing_joules),
+                    russian_kettle_bell_swing_joules=int(russian_kettle_bell_swing_joules),
+                    thruster_joules=int(thruster_joules),
+                    row_dist_meters_joules=int(row_dist_meters_joules),
+                    row_calories_joules=int(row_calories_joules),
+                    back_squat_joules=int(back_squat_joules),
+                    muscle_up_joules=int(muscle_up_joules),
+                    push_press_joules=int(push_press_joules),
+                    overhead_squat_joules=int(overhead_squat_joules),
+                    back_extension_joules=int(back_extension_joules),
+                    GHD_sit_up_joules=int(GHD_sit_up_joules),
+                    press_joules=int(press_joules),
+                    abmat_sit_up_joules=int(abmat_sit_up_joules),
+                    front_squat_joules=int(front_squat_joules),
+                    rope_climb_joules=int(rope_climb_joules),
+                    ring_dip_joules=int(ring_dip_joules),
+                    walking_lunge_joules=int(walking_lunge_joules),
+                    knees_to_elbows_joules=int(knees_to_elbows_joules),
+                    bench_press_joules=int(bench_press_joules),
+                    push_jerk_joules=int(push_jerk_joules),
+                    clean_joules=int(clean_joules),
+                    power_clean_joules=int(power_clean_joules),
+                    jerk_joules=int(jerk_joules),
+                    sumo_dead_lift_joules=int(sumo_dead_lift_joules),
+                    cycling_avg_watts_joules=int(cycling_avg_watts_joules),
+                    snatch_joules=int(snatch_joules),
+                    power_snatch_joules=int(power_snatch_joules)
+                    )
             except(ValueError, TypeError):
                 raise("please fill out the form correctly!")
             try:

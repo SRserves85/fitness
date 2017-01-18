@@ -140,7 +140,7 @@ def box_jump_calc(weight, box_jump_height, number):
 
 
 def air_squat_calc(weight, upper_leg_length, number):
-    """Takes weight, upper_leg_lengthm number and returns joules.
+    """Takes weight, upper_leg_length number and returns joules.
 
     movement length: upper_leg_length
     mass = 0.66 of body mass
@@ -193,7 +193,7 @@ def wall_ball_calc(weight, upper_leg_length, shoulder_height, wall_ball_weight, 
 
 
 def kettle_bell_calc(kettle_bell_weight, arm_length, number):
-    """Takes kettle_bell_weight, armlength, number and returns joules.
+    """Takes kettle_bell_weight, arm_length, number and returns joules.
 
     aargs:
         d(float) weight
@@ -207,7 +207,7 @@ def kettle_bell_calc(kettle_bell_weight, arm_length, number):
 
 
 def russian_kettle_bell_calc(kettle_bell_weight, arm_length, number):
-    """Takes kettle_bell_weight, armlength, number and returns joules.
+    """Takes kettle_bell_weight, arm_length, number and returns joules.
 
     aargs:
         d(float) weight
@@ -660,3 +660,61 @@ def cycling_avg_watts_calc(cycling_avg_watts):
     This is a special case just for cyclists.
     """
     return cycling_avg_watts
+
+
+def snatch_calc(weight, upper_leg_length, height, arm_length, snatch_weight, number):
+    """takes weight, upper_leg_length, height, arm_length, snatch_weight, number and returns joules.
+
+    Assumes squat snatch is performed.
+    Similar calculation to clean only more height
+
+    aargs:
+        d(float) weight
+        d(int) upper_leg_length
+        d(int) height
+        d(int) arm_length
+        d(int) snatch_weight
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+
+    total_dis = in_to_meter(height) + in_to_meter(arm_length)
+    catch_dis = total_dis - in_to_meter(upper_leg_length)
+
+    body_lift = lb_to_kg(weight) * 9.80665 * (in_to_meter(height) - 0.225) * 0.66 * number
+    bar_lift = lb_to_kg(snatch_weight) * 9.80665 * catch_dis * number
+    air_squat = lb_to_kg(weight) * 0.85 * 9.80665 * in_to_meter(upper_leg_length) * number
+    overhead_squat = lb_to_kg(snatch_weight) * 9.80665 * in_to_meter(upper_leg_length) * number
+
+    return body_lift + bar_lift + air_squat + overhead_squat
+
+
+def power_snatch_calc(weight, upper_leg_length, height, arm_length, snatch_weight, number):
+    """takes weight, upper_leg_length, height, arm_length, snatch_weight, number and returns joules.
+
+    Assumes squat snatch is performed.
+    Similar calculation to snatch, but assumed half leg length for high catch
+
+    aargs:
+        d(float) weight
+        d(int) upper_leg_length
+        d(int) height
+        d(int) arm_length
+        d(int) snatch_weight
+        d(int) number
+
+    returns:
+        d(float) joules
+    """
+
+    total_dis = in_to_meter(height) + in_to_meter(arm_length)
+    catch_dis = total_dis - in_to_meter(upper_leg_length)
+
+    body_lift = lb_to_kg(weight) * 9.80665 * (in_to_meter(height) - 0.225) * 0.66 * number
+    bar_lift = lb_to_kg(snatch_weight) * 9.80665 * catch_dis * number
+    air_squat = lb_to_kg(weight) * 0.85 * 9.80665 * in_to_meter(upper_leg_length / 2) * number
+    overhead_squat = lb_to_kg(snatch_weight) * 9.80665 * in_to_meter(upper_leg_length / 2) * number
+
+    return body_lift + bar_lift + air_squat + overhead_squat

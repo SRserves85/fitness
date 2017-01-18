@@ -71,3 +71,7 @@ class Workout(Base):
     sumo_dead_lift = Column(Integer())
     sumo_dead_lift_weight = Column(Integer())
     cycling_avg_watts = Column(Integer())
+    snatch = Column(Integer())
+    snatch_weight = Column(Integer())
+    power_snatch = Column(Integer())
+    power_snatch_weight = Column(Integer())
