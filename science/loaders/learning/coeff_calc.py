@@ -122,7 +122,70 @@ class Correct_Workouts(object):
 
     def find_movement_coeffs(self):
         df = self.watts
-        
+
+        if self.iteration == self.iterations:
+            df = self.watts
+        else:
+            df = self.calc_watts
+
+        out_dict = {}
+        for name in self.names:
+            dat = df[df.name == name]
+            X = dat[self.movement_list].values
+            y = dat.calc_wattage.values
+            coeffs, error = nnls(X, y)
+            coeff_dict = {}
+            for i, movement in enumerate(self.movement_list):
+                coeff_dict[movement] = coeffs[i]
+            out_dict[name] = coeff_dict
+
+        if self.iteration >= self.iterations - 1:
+            self.workout_coeffs = out_dict
+
+        else:
+            for name in self.names:
+                for movement in self.movement_list:
+                    out_dict[name][movement] = self.workout_coeffs[name][movement] * out_dict[name][movement]
+            self.workout_coeffs = out_dict
+
+    def calculate_new_wattages(self):
+
+        if self.iteration == self.iterations:
+            df = self.watts
+        else:
+            df = self.calc_watts
+
+        # pull workouts from coefficient data
+        for athlete in self.workout_coeffs:
+
+            # multiply current watts by coefficients for each athlete
+            for movement in self.workout_coeffs[athlete].keys():
+                df.loc[df.name == athlete, movement] = df[movement] * self.workout_coeffs[athlete][movement]
+        df.wattage_total = df[self.workout_coeffs[athlete].keys()].sum(axis=1)
+        self.calc_watts = df
+
+    def calc_error(self):
+        error = np.sum(np.square(self.calc_watts.wattage_total - self.calc_watts.calc_wattage))
+
+        if self.iteration == self.iterations:
+            self.error = error
+        else:
+            if self.error < error:
+                pass
+            self.error = error
+
+    def _model_workouts(self):
+
+        self.iteration = self.iterations
+        self.pull_workouts()
+        while self.iteration > 0:
+            self.fit_curve()
+            self.calc_wattage()
+            self.find_movement_coeffs()
+            self.calculate_new_wattages()
+            self.calc_error()
+            self.iteration = self.iteration - 1
+            print "iteration {}: error = {}".format(self.iteration, self.error)
         pass
 
 if __name__ == "__main__":
