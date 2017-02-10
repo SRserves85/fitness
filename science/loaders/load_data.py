@@ -10,9 +10,9 @@ class perform_work(BaseLoader):
         pass
 
 if __name__ == '__main__':
-    loading = perform_work()
+    LOADING = perform_work()
 
-    loading._pull_data()
-    loading._load_athletes()
-    loading._load_workouts()
-    loading._load_workout_joules()
+    LOADING.pull_data()
+    LOADING.load_athletes()
+    LOADING.load_workouts()
+    LOADING.load_workout_joules()

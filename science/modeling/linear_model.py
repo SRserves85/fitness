@@ -3,6 +3,8 @@ import numpy as np
 
 from sklearn.linear_model import LinearRegression
 
+from scipy.optimize import fmin_slsqp
+
 
 def get_coeffs(X, y):
     """Calculates workout coefficients for each movement
@@ -18,3 +20,5 @@ def get_coeffs(X, y):
     lr = LinearRegression()
     lr.fit(X, y)
     return lr.coef_
+
+def get_specific_coeffs(X, y):

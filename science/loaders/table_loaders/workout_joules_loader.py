@@ -1,14 +1,11 @@
 """Contains everything to import workout files
 """
-import sys
+import datetime
 import pandas as pd
 import numpy as np
-import datetime
 
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
-
-from utilities.google.sheets import _pull_google_workout_data
 
 from science.loaders.helpers.workout_cal_converters.movement_conversion_model import (
     pull_up_calc, push_up_calc, burpie_calc, double_under_calc,
@@ -26,7 +23,7 @@ from utilities.postgres.models.workout_joules import Workout_Joules
 from utilities.postgres.connection import engine, db_query
 
 
-def _load_workout_joules():
+def load_workout_joules():
     # TODO: Autoupdate athlete stats in case of PR's
     # ADD COEFFICIENT FINDERS
 
@@ -218,7 +215,7 @@ def _load_workout_joules():
                 cycling_avg_watts_joules,
                 snatch_joules,
                 power_snatch_joules
-                            ]))
+            ]))
             try:
                 insert = Workout_Joules(
                     name=name,
@@ -264,7 +261,7 @@ def _load_workout_joules():
                     cycling_avg_watts_joules=int(cycling_avg_watts_joules),
                     snatch_joules=int(snatch_joules),
                     power_snatch_joules=int(power_snatch_joules)
-                    )
+                )
             except(ValueError, TypeError):
                 raise("please fill out the form correctly!")
             try:
@@ -272,4 +269,4 @@ def _load_workout_joules():
                 session.flush()
             except IntegrityError:
                 session.rollback()
-        session.commit()
+    session.commit()

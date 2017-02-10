@@ -16,7 +16,7 @@ def fit_athlte_results(workout_time, wattage):
     def function(x, a, b, c):
         """Should return a standard log decline plot
         """
-        return a + b*(np.log(c * x))
+        return a + b * (np.log(np.abs(c) * x))
     xdata = workout_time
     ydata = wattage
     popt, pcov = curve_fit(function, xdata, ydata)
@@ -27,4 +27,4 @@ def fit_athlte_results(workout_time, wattage):
 def function(x, a, b, c):
     """Should return a standard log decline plot
     """
-    return a + b*(np.log(c * x))
+    return a + b * (np.log(np.abs(c) * x))

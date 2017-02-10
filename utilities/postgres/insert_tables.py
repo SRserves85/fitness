@@ -8,6 +8,7 @@ from utilities.postgres.models.athletes import Athlete
 from utilities.postgres.models.workout import Workout
 from utilities.postgres.models.workout_joules import Workout_Joules
 
+
 def insert_tables():
 
     # Set and connect the engine
@@ -15,7 +16,7 @@ def insert_tables():
     dbname = LOCAL_PG_CRIDENTIALS['db_name']
     engine = create_engine('postgresql://{}@localhost/{}'.format(user, dbname))
 
-    #place the tables in postgres
+    # place the tables in postgres
     Base.metadata.create_all(engine)
 if __name__ == "__main__":
     insert_tables()

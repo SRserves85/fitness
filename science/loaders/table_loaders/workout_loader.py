@@ -8,8 +8,6 @@ import datetime
 from sqlalchemy.orm import sessionmaker
 from sqlalchemy.exc import IntegrityError
 
-from utilities.google.sheets import _pull_google_workout_data
-
 from science.loaders.helpers.workout_cal_converters.movement_conversion_model import (
     pull_up_calc, push_up_calc, burpie_calc, double_under_calc,
     run_dist_meters_calc, dead_lift_calc, box_jump_calc, air_squat_calc,
@@ -26,7 +24,7 @@ from utilities.postgres.models.workout import Workout
 from utilities.postgres.connection import engine, db_query
 
 
-def _load_workouts():
+def load_workouts():
     # TODO: Autoupdate athlete stats in case of PR's
     # ADD COEFFICIENT FINDERS
 
@@ -79,7 +77,7 @@ def _load_workouts():
             try:
                 name = str(athlete)
                 workout_type = str(index['workout_type'])
-                date = index['date']
+                date = pd.to_datetime(index['date'])
                 workout_length_seconds = int(index['workout_length_seconds'])
                 created_at = datetime.datetime.now()
                 pull_up_number = int(index['pull_up'])
@@ -138,6 +136,18 @@ def _load_workouts():
                 snatch_weight = int(index['snatch_weight'])
                 power_snatch_number = int(index['power_snatch'])
                 power_snatch_weight = int(index['power_snatch_weight'])
+                total_reps = int(index[[
+                    'pull_up', 'push_up', 'burpie', 'double_under',
+                    'run_dist_meters', 'deadlift', 'box_jump', 'air_squat',
+                    'handstand_push_up', 'wall_ball', 'kettle_bell_swing',
+                    'russian_kettle_bell_swing', 'thruster', 'row_dist_meters',
+                    'row_calories', 'back_squat', 'muscle_up', 'push_press',
+                    'overhead_squat', 'back_extension', 'GHD_sit_up', 'press',
+                    'abmat_sit_up', 'front_squat', 'rope_climb', 'ring_dip',
+                    'walking_lunge', 'knees_to_elbows', 'bench_press',
+                    'push_jerk', 'clean', 'power_clean', 'jerk',
+                    'sumo_dead_lift', 'cycling_avg_watts', 'snatch',
+                    'power_snatch']].sum())
 
                 # workout joules calculation
                 pull_up_joules = pull_up_calc(weight, arm_length, pull_up_number)
@@ -179,7 +189,8 @@ def _load_workouts():
                 power_snatch_joules = power_snatch_calc(weight, upper_leg_length, height, arm_length, power_snatch_weight, power_snatch_number)
             except ValueError:
                 raise
-            # Calculate Calories expended in the workout:
+
+            # Calculate Joules expended in the workout:
             joules_total = np.sum(np.array([
                 pull_up_joules,
                 push_up_joules,
@@ -218,7 +229,7 @@ def _load_workouts():
                 cycling_avg_watts_joules,
                 snatch_joules,
                 power_snatch_joules
-                            ]))
+            ]))
             try:
                 insert = Workout(
                     name=athlete,
@@ -226,6 +237,7 @@ def _load_workouts():
                     date=date,
                     workout_length_seconds=workout_length_seconds,
                     created_at=created_at,
+                    total_reps=total_reps,
                     joules=int(joules_total),
                     pull_up=pull_up_number,
                     push_up=push_up_number,
@@ -280,13 +292,17 @@ def _load_workouts():
                     sumo_dead_lift_weight=sumo_dead_lift_weight,
                     cycling_avg_watts=cycling_avg_watts,
                     snatch=snatch_number,
-                    power_snatch=power_snatch_number
-                        )
+                    snatch_weight=snatch_weight,
+                    power_snatch=power_snatch_number,
+                    power_snatch_weight=power_snatch_weight
+                )
             except(ValueError, TypeError):
-                raise("please fill out the form correctly!")
+                import pdb; pdb.set_trace()
+                raise "please fill out the form correctly!"
             try:
                 session.add(insert)
                 session.flush()
             except IntegrityError:
+                raise
                 session.rollback()
         session.commit()

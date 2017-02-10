@@ -17,6 +17,7 @@ class Workout(Base):
     workout_type = Column(String(), nullable=False, primary_key=True)
     date = Column(DateTime(), nullable=False, primary_key=True)
     workout_length_seconds = Column(Integer(), nullable=False, primary_key=True)
+    total_reps = Column(Integer(), nullable=False, primary_key=True)
     created_at = Column(DateTime())
     joules = Column(Float(), nullable=False)
     pull_up = Column(Integer())

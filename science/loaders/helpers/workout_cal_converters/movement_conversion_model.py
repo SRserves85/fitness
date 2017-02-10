@@ -254,9 +254,10 @@ def row_distance_calc(row_500_time_sec, distance):
         d(float) joules
     """
     adjusted_500_time = row_500_time_sec * 1.2
-    pace = 500 / adjusted_500_time
-    wattage = (2.8 / pace)**3  # Joules/second
-    return wattage * row_500_time_sec  # joules
+    pace = adjusted_500_time / 500
+    time = distance / pace
+    wattage = (2.8 / pace)  # Joules/second
+    return wattage * time  # joules
 
 
 def row_calories_calc(row_calories):

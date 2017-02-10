@@ -7,7 +7,7 @@ from httplib2 import Http
 from oauth2client import file, client, tools
 
 
-def _pull_google_workout_data():
+def pull_google_workout_data():
     """Accesses google workout sheet and writes to csv file.
 
     Always saves to local at: data/ in directory
@@ -20,29 +20,29 @@ def _pull_google_workout_data():
     """
 
     # get credentials
-    SCOPES = 'https://www.googleapis.com/auth/drive.readonly'
+    scopes = 'https://www.googleapis.com/auth/drive.readonly'
     store = file.Storage('storage.json')
     creds = store.get()
     if not creds or creds.invalid:
         flags = argparse.ArgumentParser(parents=[tools.argparser]).parse_args()
-        flow = client.flow_from_clientsecrets('client_id.json', SCOPES)
+        flow = client.flow_from_clientsecrets('client_id.json', scopes)
         creds = tools.run_flow(flow, store, flags)
-    DRIVE = discovery.build('drive', 'v3', http=creds.authorize(Http()))
+    drive = discovery.build('drive', 'v3', http=creds.authorize(Http()))
 
     # search for files
-    FILENAME = 'workouts'
-    SRC_MIMETYPE = 'application/vnd.google-apps.spreadsheet'
-    DST_MIMETYPE = 'text/csv'
+    filename = 'workouts'
+    src_mimetype = 'application/vnd.google-apps.spreadsheet'
+    dst_mimetype = 'text/csv'
 
-    files = DRIVE.files().list(
-        q='name="%s" and mimeType="%s"' % (FILENAME, SRC_MIMETYPE),
+    files = drive.files().list(
+        q='name="%s" and mimeType="%s"' % (filename, src_mimetype),
         orderBy='modifiedTime desc,name').execute().get('files', [])
 
     # export files to correct directory
     if files:
         fn = 'data/%s.csv' % os.path.splitext(files[0]['name'].replace(' ', '_'))[0]
         print('Exporting "%s" as "%s"... ' % (files[0]['name'], fn), end='')
-        data = DRIVE.files().export(fileId=files[0]['id'], mimeType=DST_MIMETYPE).execute()
+        data = drive.files().export(fileId=files[0]['id'], mimeType=dst_mimetype).execute()
         if data:
             with open(fn, 'wb') as f:
                 f.write(data)

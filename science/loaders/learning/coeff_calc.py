@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+from matplotlib import pyplot as plt
 
 from utilities.postgres.connection import db_query
 
@@ -82,10 +83,14 @@ class Correct_Workouts(object):
             workouts = self.watts
             grouped = workouts[workouts.workout_type == 'metcon'].groupby('name')
             for name, group in grouped:
+                group.sort_values(by='workout_length_seconds', inplace=True)
                 workout_times = group.workout_length_seconds.values
 
                 # Calculate Workout Wattage
                 workout_watts = group.wattage_total
+
+                plt.scatter(workout_times, workout_watts)
+                plt.title(name)
 
                 # fit curve from model to get coefficients
                 curve_coeffs = fit_athlte_results(workout_times, workout_watts)
@@ -93,6 +98,9 @@ class Correct_Workouts(object):
                 stats[name]['a'] = curve_coeffs[0]
                 stats[name]['b'] = curve_coeffs[1]
                 stats[name]['c'] = curve_coeffs[2]
+                x = np.linspace(1, workout_times.max())
+                plt.plot(x, (curve_coeffs[0] + curve_coeffs[1] * (np.log(np.abs(curve_coeffs[2]) * x))))
+                plt.show()
             modeled = pd.DataFrame(stats).transpose()
             self.curve_coefs = modeled
 
@@ -101,7 +109,7 @@ class Correct_Workouts(object):
         def func(x, a, b, c):
             """Should return a standard log decline plot
             """
-            return a + b*(np.log(c * x))
+            return a + b * (np.log(c + x))
 
         df = self.watts
         cof = self.curve_coefs
@@ -113,7 +121,9 @@ class Correct_Workouts(object):
         self.watts = df
 
     def find_movement_coeffs(self):
+        df = self.watts
         
+        pass
 
 if __name__ == "__main__":
     calc = Correct_Workouts(1)
