@@ -2,6 +2,7 @@
 *.pyc
 env.py
 *.csv
+*.ipynb
 *.pdf
 *.zip
 *.rdb
