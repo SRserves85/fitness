@@ -269,4 +269,4 @@ def load_workout_joules():
                 session.flush()
             except IntegrityError:
                 session.rollback()
-    session.commit()
+        session.commit()

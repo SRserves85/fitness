@@ -1,10 +1,12 @@
 import pandas as pd
 import numpy as np
 from matplotlib import pyplot as plt
+import statsmodels.api as sm
 
 from utilities.postgres.connection import db_query
 
 from science.loaders.learning.fit_curve import model_workouts
+from science.loaders.helpers.movements import movements
 
 from science.modeling.curvefit import fit_athlte_results
 
@@ -16,6 +18,46 @@ class Correct_Workouts(object):
         self.iteration = 2
         self.workout_wattage = None
         self.original_workout_joules = None
+        self.movements = [
+            "pull_up",
+            "push_up",
+            "burpie",
+            "double_under",
+            "run_dist_meters",
+            "deadlift",
+            "box_jump",
+            "air_squat",
+            "handstand_push_up",
+            "wall_ball",
+            "kettle_bell_swing",
+            "russian_kettle_bell_swing",
+            "thruster",
+            "row_dist_meters",
+            "row_calories",
+            "back_squat",
+            "muscle_up",
+            "push_press",
+            "overhead_squat",
+            "back_extension",
+            "GHD_sit_up",
+            "press",
+            "abmat_sit_up",
+            "front_squat",
+            "rope_climb",
+            "ring_dip",
+            "walking_lunge",
+            "knees_to_elbows",
+            "bench_press",
+            "push_jerk",
+            "clean",
+            "power_clean",
+            "jerk",
+            "sumo_dead_lift",
+            "cycling_avg_watts",
+            "snatch",
+            "power_snatch"
+        ]
+        self.movement_coeffs = {}
 
     def pull_workouts(self):
         """pull most recent workout joule calculations.
@@ -72,6 +114,46 @@ class Correct_Workouts(object):
         df["power_snatch_wattage"] = (work.power_snatch_joules / work.workout_length_seconds)
         self.watts = df
 
+        for name, group in df.groupby('name'):
+            self.movement_coeffs[name] = {'pull_up_wattage': 1,
+                                          'push_up_wattage': 1,
+                                          'burpie_wattage': 1,
+                                          'double_under_wattage': 1,
+                                          'run_dist_meters_wattage': 1,
+                                          'deadlift_wattage': 1,
+                                          'box_jump_wattage': 1,
+                                          'air_squat_wattage': 1,
+                                          'handstand_push_up_wattage': 1,
+                                          'wall_ball_wattage': 1,
+                                          'kettle_bell_swing_wattage': 1,
+                                          'russian_kettle_bell_swing_wattage': 1,
+                                          'thruster_wattage': 1,
+                                          'row_dist_meters_wattage': 1,
+                                          'row_calories_wattage': 1,
+                                          'back_squat_wattage': 1,
+                                          'muscle_up_wattage': 1,
+                                          'push_press_wattage': 1,
+                                          'overhead_squat_wattage': 1,
+                                          'back_extension_wattage': 1,
+                                          'GHD_sit_up_wattage': 1,
+                                          'press_wattage': 1,
+                                          'abmat_sit_up_wattage': 1,
+                                          'front_squat_wattage': 1,
+                                          'rope_climb_wattage': 1,
+                                          'ring_dip_wattage': 1,
+                                          'walking_lunge_wattage': 1,
+                                          'knees_to_elbows_wattage': 1,
+                                          'bench_press_wattage': 1,
+                                          'push_jerk_wattage': 1,
+                                          'clean_wattage': 1,
+                                          'power_clean_wattage': 1,
+                                          'jerk_wattage': 1,
+                                          'sumo_dead_lift_wattage': 1,
+                                          'cycling_avg_watts_wattage': 1,
+                                          'snatch_wattage': 1,
+                                          'power_snatch_wattage': 1,
+                                          'calc_wattage': 1}
+
     def fit_curve(self):
         """fit_curve for current watts df
         """
@@ -98,9 +180,9 @@ class Correct_Workouts(object):
                 stats[name]['a'] = curve_coeffs[0]
                 stats[name]['b'] = curve_coeffs[1]
                 stats[name]['c'] = curve_coeffs[2]
-                x = np.linspace(1, workout_times.max())
-                plt.plot(x, (curve_coeffs[0] + curve_coeffs[1] * (np.log(np.abs(curve_coeffs[2]) * x))))
-                plt.show()
+                # x = np.linspace(1, workout_times.max())
+                # plt.plot(x, (curve_coeffs[0] + curve_coeffs[1] * (np.log(np.abs(curve_coeffs[2]) * x))))
+                # plt.show()
             modeled = pd.DataFrame(stats).transpose()
             self.curve_coefs = modeled
 
@@ -121,32 +203,54 @@ class Correct_Workouts(object):
         self.watts = df
 
     def find_movement_coeffs(self):
+
+        def shorten(df):
+            """ Takes dataframe and returns only the data without zeros
+
+            Aargs:
+                d(pandas.dataframe) df
+
+            Returns:
+                d(pandas.dataframe) dataframe without columns with all zeros
+            """
+            mov = []
+            for move in calc.movements:
+                mov.append(move + "_wattage")
+            mov.append('calc_wattage')
+
+            d = df[mov]
+            for m in mov:
+                if d[m].sum() <= 0:
+                    d.drop(m, axis=1, inplace=True)
+            return d
+
+        def prepare(df):
+            """ Takes pandas dataframe and returns X and y vectors for linear
+                model
+
+            Aargs:
+                d(pandas.dataframe) df
+
+            Returns:
+                d(numpy.array): X, values for exog in model
+                d(numpu.array): y, values in endog in model
+            """
+            y = df.calc_wattage
+            movs = [x for x in shorten(group).columns.tolist() if x != "calc_wattage"]
+            X = df[movs]
+            return X, y
+
         df = self.watts
+        for name, group in df.groupby('name'):
+            import pdb; pdb.set_trace()
+            X, y = prepare(group)
+            X = sm.add_constant(X)
+            params = sm.OLS(y, X).fit().params.to_dict()
+            del params['const']
 
-        if self.iteration == self.iterations:
-            df = self.watts
-        else:
-            df = self.calc_watts
+            for move in params.keys():
 
-        out_dict = {}
-        for name in self.names:
-            dat = df[df.name == name]
-            X = dat[self.movement_list].values
-            y = dat.calc_wattage.values
-            coeffs, error = nnls(X, y)
-            coeff_dict = {}
-            for i, movement in enumerate(self.movement_list):
-                coeff_dict[movement] = coeffs[i]
-            out_dict[name] = coeff_dict
-
-        if self.iteration >= self.iterations - 1:
-            self.workout_coeffs = out_dict
-
-        else:
-            for name in self.names:
-                for movement in self.movement_list:
-                    out_dict[name][movement] = self.workout_coeffs[name][movement] * out_dict[name][movement]
-            self.workout_coeffs = out_dict
+                self.movement_coeffs[name][move] = self.movement_coeffs[name][move] * params[move]
 
     def calculate_new_wattages(self):
 

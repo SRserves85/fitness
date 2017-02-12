@@ -238,7 +238,7 @@ def thruster_calc(weight, upper_leg_length, shoulder_height, arm_length, thruste
 
 
 def row_distance_calc(row_500_time_sec, distance):
-    """takes weight, row_time, distance returns joules
+    """ takes weight, row_time, distance returns joules
 
     Assumes you are rowing at 80% your 500 meter pace.
     Couldn't think of a better way to do this to take into account better rowers.
@@ -272,7 +272,7 @@ def row_calories_calc(row_calories):
     returns:
         d(float): joules
     """
-    return row_calories * 4184
+    return row_calories * 2092
 
 
 def back_squat_calc(weight, upper_leg_length, back_squat_weight, number):

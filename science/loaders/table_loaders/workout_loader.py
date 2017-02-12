@@ -303,6 +303,6 @@ def load_workouts():
                 session.add(insert)
                 session.flush()
             except IntegrityError:
-                raise
+                # raise
                 session.rollback()
         session.commit()

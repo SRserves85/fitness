@@ -21,4 +21,6 @@ def get_coeffs(X, y):
     lr.fit(X, y)
     return lr.coef_
 
+
 def get_specific_coeffs(X, y):
+    pass
