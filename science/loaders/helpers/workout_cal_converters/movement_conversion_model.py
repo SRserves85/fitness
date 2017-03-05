@@ -223,6 +223,8 @@ def russian_kettle_bell_calc(kettle_bell_weight, arm_length, number):
 def thruster_calc(weight, upper_leg_length, shoulder_height, arm_length, thruster_weight, number):
     """Takes kettle_bell_weight, armlength, number and returns joules.
 
+    testing showed that this needed to be multiplied by 3 after calculation
+
     aargs:
         d(float) weight
         d(int) upper_leg_length
@@ -234,10 +236,10 @@ def thruster_calc(weight, upper_leg_length, shoulder_height, arm_length, thruste
     air_squat = lb_to_kg(weight) * 0.85 * 9.80665 * in_to_meter(upper_leg_length) * number
     weight_squat = lb_to_kg(thruster_weight) * 9.80665 * in_to_meter(upper_leg_length) * number
     press = lb_to_kg(thruster_weight) * 9.80665 * in_to_meter(arm_length) * number
-    return air_squat + weight_squat + press
+    return air_squat + weight_squat + press * 3
 
 
-def row_distance_calc(row_500_time_sec, distance):
+def row_distance_calc(row_500_time_sec, distance, height, weight):
     """ takes weight, row_time, distance returns joules
 
     Assumes you are rowing at 80% your 500 meter pace.
@@ -246,6 +248,8 @@ def row_distance_calc(row_500_time_sec, distance):
     see below for concept 2 calculation:
     http://www.concept2.com/indoor-rowers/training/calculators/calorie-calculator
 
+    Corrects for height/weight since concept assumes 5'10" and 185lb athletes
+
     aargs:
         d(int) row_500_time_sec
         d(int) distance
@@ -253,18 +257,23 @@ def row_distance_calc(row_500_time_sec, distance):
     returns:
         d(float) joules
     """
+    height_correct = height / 70
+    weight_correct = lb_to_kg(weight) / lb_to_kg(185)
+
     adjusted_500_time = row_500_time_sec * 1.2
     pace = adjusted_500_time / 500
     time = distance / pace
-    wattage = (2.8 / pace)  # Joules/second
-    return wattage * time  # joules
+    wattage = (2.8 / pace) * 1.6  # Joules/second
+    return wattage * time * (1 / height_correct) * (1 / weight_correct)  # joules
 
 
-def row_calories_calc(row_calories):
+def row_calories_calc(row_calories, height, weight):
     """takes row_calories returns joules
 
     Need conversion to actual work done, not metabolic calorie as reported by
-    concept2
+    concept2.
+
+    Corrects for height/weight since concept assumes 5'10" and 185lb athletes
 
     aargs:
         d(int): row_calories
@@ -272,7 +281,9 @@ def row_calories_calc(row_calories):
     returns:
         d(float): joules
     """
-    return row_calories * 2092
+    height_correct = (height / 70) / 2
+    weight_correct = lb_to_kg(weight) / lb_to_kg(185)
+    return row_calories * 2092 * height_correct * weight_correct
 
 
 def back_squat_calc(weight, upper_leg_length, back_squat_weight, number):

@@ -180,9 +180,9 @@ class Correct_Workouts(object):
                 stats[name]['a'] = curve_coeffs[0]
                 stats[name]['b'] = curve_coeffs[1]
                 stats[name]['c'] = curve_coeffs[2]
-                # x = np.linspace(1, workout_times.max())
-                # plt.plot(x, (curve_coeffs[0] + curve_coeffs[1] * (np.log(np.abs(curve_coeffs[2]) * x))))
-                # plt.show()
+                x = np.linspace(1, workout_times.max())
+                plt.plot(x, (curve_coeffs[0] + curve_coeffs[1] * (np.log(np.abs(curve_coeffs[2]) * x))))
+                plt.show()
             modeled = pd.DataFrame(stats).transpose()
             self.curve_coefs = modeled
 
