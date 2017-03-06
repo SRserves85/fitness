@@ -12,7 +12,7 @@ class perform_work(BaseLoader):
 if __name__ == '__main__':
     LOADING = perform_work()
 
-    # LOADING.pull_data()
+    LOADING.pull_data()
     LOADING.load_athletes()
     LOADING.load_workouts()
     LOADING.load_workout_joules()
